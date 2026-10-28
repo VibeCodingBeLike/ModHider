@@ -1,0 +1,12 @@
+{
+  "modmenu.nameTranslation.modhider": "ModHider",
+  "modmenu.descriptionTranslation.modhider": "Hide client mods from the Fabric handshake and server detection",
+  "modhider.title": "ModHider Configuration",
+  "modhider.search": "Search mods...",
+  "modhider.stats": "Hidden: %s / %s mods",
+  "modhider.hide_all": "Hide All",
+  "modhider.show_all": "Show All",
+  "modhider.status.hidden": "Hidden",
+  "modhider.status.shown": "Shown",
+  "modhider.status.always_hidden": "Always Hidden"
+}

@@ -1,0 +1,22 @@
+# Gradle and build outputs
+.gradle/
+build/
+bin/
+out/
+
+# Minecraft Fabric run outputs
+run/
+runs/
+logs/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS specific files
+.DS_Store
+Thumbs.db

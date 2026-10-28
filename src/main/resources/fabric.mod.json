@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "modhider",
+  "version": "${version}",
+  "name": "ModHider",
+  "description": "Hide client mods from the Fabric handshake and server detection",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/modhider/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "kat.blasted.modhider.client.ModhiderDataGenerator"
+    ],
+    "client": [
+      "kat.blasted.modhider.client.ModhiderClient"
+    ],
+    "main": [
+      "kat.blasted.modhider.Modhider"
+    ],
+    "modmenu": [
+      "kat.blasted.modhider.client.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "modhider.mixins.json",
+    {
+      "config": "modhider.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
