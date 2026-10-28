@@ -6,6 +6,8 @@ import com.google.gson.JsonParser;
 import kat.blasted.modhider.config.ModHiderConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.KnownPack;
 import org.slf4j.Logger;
@@ -24,8 +26,46 @@ import java.util.stream.Stream;
 public final class ModHiderFilter {
     public static final Logger LOGGER = LoggerFactory.getLogger("ModHider");
     private static final Set<String> DYNAMIC_HIDDEN_KEYS = Collections.synchronizedSet(new HashSet<>());
+    private static final ThreadLocal<Boolean> IS_DECODING_SERVER_PACKET = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Boolean> IS_IN_ITEM_CONTEXT = ThreadLocal.withInitial(() -> false);
 
     private ModHiderFilter() {
+    }
+
+    public static boolean isDecodingServerPacket() {
+        return IS_DECODING_SERVER_PACKET.get();
+    }
+
+    public static void setIsDecodingServerPacket(boolean value) {
+        IS_DECODING_SERVER_PACKET.set(value);
+    }
+
+    public static boolean isInItemContext() {
+        return IS_IN_ITEM_CONTEXT.get();
+    }
+
+    public static void setIsInItemContext(boolean value) {
+        IS_IN_ITEM_CONTEXT.set(value);
+    }
+
+    public static Component markComponent(Component component) {
+        if (component == null) {
+            return null;
+        }
+        if (component.getContents() instanceof ComponentMarker marker) {
+            marker.modhider$mark();
+        }
+        if (component.getContents() instanceof TranslatableContents translatable) {
+            for (Object arg : translatable.getArgs()) {
+                if (arg instanceof Component childComp) {
+                    markComponent(childComp);
+                }
+            }
+        }
+        for (Component sibling : component.getSiblings()) {
+            markComponent(sibling);
+        }
+        return component;
     }
 
     public static void reloadHiddenModKeys() {

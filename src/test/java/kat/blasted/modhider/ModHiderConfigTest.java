@@ -131,4 +131,20 @@ public class ModHiderConfigTest {
         assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isItemRenameHidden("Diamond Sword"));
         assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isItemRenameHidden("Dirt"));
     }
+
+    @Test
+    public void testDecodingAndItemContextState() {
+        assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isDecodingServerPacket());
+        assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isInItemContext());
+
+        kat.blasted.modhider.filter.ModHiderFilter.setIsDecodingServerPacket(true);
+        assertTrue(kat.blasted.modhider.filter.ModHiderFilter.isDecodingServerPacket());
+        kat.blasted.modhider.filter.ModHiderFilter.setIsDecodingServerPacket(false);
+        assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isDecodingServerPacket());
+
+        kat.blasted.modhider.filter.ModHiderFilter.setIsInItemContext(true);
+        assertTrue(kat.blasted.modhider.filter.ModHiderFilter.isInItemContext());
+        kat.blasted.modhider.filter.ModHiderFilter.setIsInItemContext(false);
+        assertFalse(kat.blasted.modhider.filter.ModHiderFilter.isInItemContext());
+    }
 }

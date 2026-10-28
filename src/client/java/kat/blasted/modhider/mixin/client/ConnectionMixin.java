@@ -11,6 +11,8 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.BrandPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerboundSelectKnownPacks;
+import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
+import net.minecraft.network.protocol.game.ServerboundSignUpdatePacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.KnownPack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -127,6 +129,39 @@ public abstract class ConnectionMixin {
                 ci.cancel();
                 ModHiderFilter.LOGGER.info("[ModHider] Re-sending filtered ServerboundSelectKnownPacks ({} -> {} packs)", packs.size(), filtered.size());
                 this.send(new ServerboundSelectKnownPacks(filtered), callback, flush);
+                return;
+            }
+        }
+
+        // 5. Sign text leakage prevention
+        if (packet instanceof ServerboundSignUpdatePacket signPacket) {
+            String[] lines = signPacket.getLines();
+            boolean modified = false;
+            String[] newLines = new String[lines.length];
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                if (ModHiderFilter.isTranslationKeyHidden(line) || ModHiderFilter.isItemRenameHidden(line)) {
+                    newLines[i] = "";
+                    modified = true;
+                    ModHiderFilter.LOGGER.info("[ModHider] Sanitized ServerboundSignUpdatePacket line {}: {}", i, line);
+                } else {
+                    newLines[i] = line;
+                }
+            }
+            if (modified) {
+                ci.cancel();
+                this.send(new ServerboundSignUpdatePacket(signPacket.getPos(), signPacket.isFrontText(), newLines[0], newLines[1], newLines[2], newLines[3]), callback, flush);
+                return;
+            }
+        }
+
+        // 6. Anvil item rename leakage prevention
+        if (packet instanceof ServerboundRenameItemPacket renamePacket) {
+            String name = renamePacket.getName();
+            if (ModHiderFilter.isTranslationKeyHidden(name) || ModHiderFilter.isItemRenameHidden(name)) {
+                ci.cancel();
+                ModHiderFilter.LOGGER.info("[ModHider] Blocked ServerboundRenameItemPacket: {}", name);
+                this.send(new ServerboundRenameItemPacket(""), callback, flush);
                 return;
             }
         }

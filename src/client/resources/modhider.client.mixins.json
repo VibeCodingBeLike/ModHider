@@ -6,10 +6,12 @@
   "client": [
     "AbstractNetworkAddonMixin",
     "ClientCommonNetworkAddonMixin",
-    "ClientLanguageMixin",
     "ClientLoginNetworkAddonMixin",
     "ConnectionMixin",
-    "KeyMappingMixin"
+    "ItemStackMixin",
+    "KeybindContentsMixin",
+    "PacketDecoderMixin",
+    "TranslatableContentsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
